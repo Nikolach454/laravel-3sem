@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MainController;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,6 +24,10 @@ Route::get('/', [MainController::class, 'index'])->name('home');
  * Страница галереи (детальный просмотр статьи)
  */
 Route::get('/gallery/{index}', [MainController::class, 'gallery'])->name('gallery');
+
+Route::get('/signin', [AuthController::class, 'create'])->name('signin');
+
+Route::post('/signin', [AuthController::class, 'registration'])->name('registration');
 
 /**
  * Страница "О нас"
