@@ -6,9 +6,11 @@
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1>Новости</h1>
-            <a href="{{ route('articles.create') }}" class="btn btn-primary">
-                <i class="bi bi-plus-circle"></i> Добавить новость
-            </a>
+            @auth
+                <a href="{{ route('articles.create') }}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Добавить новость
+                </a>
+            @endauth
         </div>
 
         @if(session('success'))
@@ -36,16 +38,20 @@
                                     <a href="{{ route('articles.show', $article->id) }}" class="btn btn-sm btn-outline-primary">
                                         <i class="bi bi-eye"></i> Читать
                                     </a>
-                                    <a href="{{ route('articles.edit', $article->id) }}" class="btn btn-sm btn-outline-warning">
-                                        <i class="bi bi-pencil"></i> Редактировать
-                                    </a>
-                                    <form action="{{ route('articles.destroy', $article->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Вы уверены, что хотите удалить эту статью?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">
-                                            <i class="bi bi-trash"></i> Удалить
-                                        </button>
-                                    </form>
+                                    @auth
+                                        @if($article->user_id === auth()->id())
+                                            <a href="{{ route('articles.edit', $article->id) }}" class="btn btn-sm btn-outline-warning">
+                                                <i class="bi bi-pencil"></i> Редактировать
+                                            </a>
+                                            <form action="{{ route('articles.destroy', $article->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Вы уверены, что хотите удалить эту статью?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                    <i class="bi bi-trash"></i> Удалить
+                                                </button>
+                                            </form>
+                                        @endif
+                                    @endauth
                                 </div>
                             </div>
                         </div>

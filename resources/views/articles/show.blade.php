@@ -40,16 +40,20 @@
                             </small>
 
                             <div>
-                                <a href="{{ route('articles.edit', $article->id) }}" class="btn btn-warning">
-                                    <i class="bi bi-pencil"></i> Редактировать
-                                </a>
-                                <form action="{{ route('articles.destroy', $article->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Вы уверены, что хотите удалить эту статью?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger">
-                                        <i class="bi bi-trash"></i> Удалить
-                                    </button>
-                                </form>
+                                @auth
+                                    @if($article->user_id === auth()->id())
+                                        <a href="{{ route('articles.edit', $article->id) }}" class="btn btn-warning">
+                                            <i class="bi bi-pencil"></i> Редактировать
+                                        </a>
+                                        <form action="{{ route('articles.destroy', $article->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Вы уверены, что хотите удалить эту статью?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger">
+                                                <i class="bi bi-trash"></i> Удалить
+                                            </button>
+                                        </form>
+                                    @endif
+                                @endauth
                             </div>
                         </div>
                     </div>

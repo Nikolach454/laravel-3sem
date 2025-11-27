@@ -24,7 +24,6 @@ class ArticleRequest extends FormRequest
         return [
             'title' => 'required|string|max:255',
             'content' => 'required|string|min:10',
-            'author' => 'required|string|max:255',
             'published_at' => 'required|date',
         ];
     }

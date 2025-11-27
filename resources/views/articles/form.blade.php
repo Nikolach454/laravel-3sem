@@ -32,20 +32,21 @@
                                 @enderror
                             </div>
 
-                            <div class="mb-3">
-                                <label for="author" class="form-label">Автор</label>
-                                <input
-                                    type="text"
-                                    class="form-control @error('author') is-invalid @enderror"
-                                    id="author"
-                                    name="author"
-                                    value="{{ old('author', $article->author ?? '') }}"
-                                    required
-                                >
-                                @error('author')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
+                            @if(!$article)
+                                <div class="alert alert-info">
+                                    <strong>Автор:</strong> {{ auth()->user()->name }}
+                                </div>
+                            @else
+                                <div class="mb-3">
+                                    <label class="form-label">Автор</label>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        value="{{ $article->author }}"
+                                        disabled
+                                    >
+                                </div>
+                            @endif
 
                             <div class="mb-3">
                                 <label for="published_at" class="form-label">Дата публикации</label>

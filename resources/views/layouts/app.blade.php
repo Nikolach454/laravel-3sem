@@ -48,9 +48,25 @@
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('contacts') ? 'active' : '' }}" href="{{ route('contacts') }}">Контакты</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('signin') ? 'active' : '' }}" href="{{ route('signin') }}">Регистрация</a>
-                        </li>
+
+                        @auth
+                            <li class="nav-item">
+                                <span class="nav-link">Привет, {{ Auth::user()->name }}</span>
+                            </li>
+                            <li class="nav-item">
+                                <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                                    @csrf
+                                    <button type="submit" class="btn btn-link nav-link" style="display: inline; border: none; background: none;">Выход</button>
+                                </form>
+                            </li>
+                        @else
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('login') ? 'active' : '' }}" href="{{ route('login') }}">Вход</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('register') ? 'active' : '' }}" href="{{ route('register') }}">Регистрация</a>
+                            </li>
+                        @endauth
                     </ul>
                 </div>
             </div>
@@ -60,6 +76,13 @@
 
     <main class="py-5">
         <div class="container">
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
             @yield('content')
         </div>
     </main>

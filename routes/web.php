@@ -26,28 +26,45 @@ Route::get('/', [MainController::class, 'index'])->name('home');
  */
 Route::get('/gallery/{index}', [MainController::class, 'gallery'])->name('gallery');
 
-Route::get('/signin', [AuthController::class, 'create'])->name('signin');
+/**
+ * Маршруты аутентификации
+ */
+Route::middleware('guest')->group(function () {
+    Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [AuthController::class, 'login']);
+});
 
-Route::post('/signin', [AuthController::class, 'registration'])->name('registration');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
 /**
  * CRUD маршруты для работы с новостями
- * index - список всех статей
- * create - форма создания новой статьи
- * store - сохранение новой статьи
- * show - просмотр одной статьи
- * edit - форма редактирования статьи
- * update - обновление статьи
- * destroy - удаление статьи
+ * index - список всех статей (доступен всем)
+ * show - просмотр одной статьи (доступен всем)
+ * create, store, edit, update, destroy - требуют авторизации
  */
-Route::resource('articles', ArticleController::class);
+Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
 
-/**
- * Маршруты для работы с комментариями
- */
-Route::post('/articles/{article}/comments', [App\Http\Controllers\CommentController::class, 'store'])->name('comments.store');
-Route::put('/comments/{comment}', [App\Http\Controllers\CommentController::class, 'update'])->name('comments.update');
-Route::delete('/comments/{comment}', [App\Http\Controllers\CommentController::class, 'destroy'])->name('comments.destroy');
+Route::middleware('auth')->group(function () {
+    Route::get('/articles/create', [ArticleController::class, 'create'])->name('articles.create');
+    Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
+});
+
+Route::get('/articles/{article}', [ArticleController::class, 'show'])->name('articles.show');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/articles/{article}/edit', [ArticleController::class, 'edit'])->name('articles.edit');
+    Route::put('/articles/{article}', [ArticleController::class, 'update'])->name('articles.update');
+    Route::delete('/articles/{article}', [ArticleController::class, 'destroy'])->name('articles.destroy');
+
+    /**
+     * Маршруты для работы с комментариями (требуют авторизации)
+     */
+    Route::post('/articles/{article}/comments', [App\Http\Controllers\CommentController::class, 'store'])->name('comments.store');
+    Route::put('/comments/{comment}', [App\Http\Controllers\CommentController::class, 'update'])->name('comments.update');
+    Route::delete('/comments/{comment}', [App\Http\Controllers\CommentController::class, 'destroy'])->name('comments.destroy');
+});
 
 /**
  * Страница "О нас"
