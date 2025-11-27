@@ -31,9 +31,23 @@ Route::get('/signin', [AuthController::class, 'create'])->name('signin');
 Route::post('/signin', [AuthController::class, 'registration'])->name('registration');
 
 /**
- * Страница новостей
+ * CRUD маршруты для работы с новостями
+ * index - список всех статей
+ * create - форма создания новой статьи
+ * store - сохранение новой статьи
+ * show - просмотр одной статьи
+ * edit - форма редактирования статьи
+ * update - обновление статьи
+ * destroy - удаление статьи
  */
-Route::get('/articles', [ArticleController::class, 'index'])->name('articles');
+Route::resource('articles', ArticleController::class);
+
+/**
+ * Маршруты для работы с комментариями
+ */
+Route::post('/articles/{article}/comments', [App\Http\Controllers\CommentController::class, 'store'])->name('comments.store');
+Route::put('/comments/{comment}', [App\Http\Controllers\CommentController::class, 'update'])->name('comments.update');
+Route::delete('/comments/{comment}', [App\Http\Controllers\CommentController::class, 'destroy'])->name('comments.destroy');
 
 /**
  * Страница "О нас"
