@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\MainController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,16 +15,17 @@ use Illuminate\Support\Facades\Route;
 */
 
 /**
- * Главная страница (приветствие)
- * 
+ * Главная страница (список статей)
  */
-Route::get('/', function () {
-    return view('home');
-})->name('home');
+Route::get('/', [MainController::class, 'index'])->name('home');
+
+/**
+ * Страница галереи (детальный просмотр статьи)
+ */
+Route::get('/gallery/{index}', [MainController::class, 'gallery'])->name('gallery');
 
 /**
  * Страница "О нас"
- *
  */
 Route::get('/about', function () {
     return view('about');
