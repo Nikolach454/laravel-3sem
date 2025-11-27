@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ArticleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,6 +29,11 @@ Route::get('/gallery/{index}', [MainController::class, 'gallery'])->name('galler
 Route::get('/signin', [AuthController::class, 'create'])->name('signin');
 
 Route::post('/signin', [AuthController::class, 'registration'])->name('registration');
+
+/**
+ * Страница новостей
+ */
+Route::get('/articles', [ArticleController::class, 'index'])->name('articles');
 
 /**
  * Страница "О нас"
