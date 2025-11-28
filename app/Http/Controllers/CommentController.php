@@ -13,10 +13,11 @@ class CommentController extends Controller
     {
         $validated = $request->validated();
         $validated['user_id'] = auth()->id();
+        $validated['is_approved'] = false;
 
         $article->comments()->create($validated);
 
-        return redirect()->route('articles.show', $article->id)->with('success', 'Комментарий успешно добавлен!');
+        return redirect()->route('articles.show', $article->id)->with('success', 'Комментарий успешно добавлен и ожидает модерации!');
     }
 
     public function edit(Comment $comment)
@@ -43,5 +44,41 @@ class CommentController extends Controller
         $comment->delete();
 
         return redirect()->route('articles.show', $articleId)->with('success', 'Комментарий успешно удален!');
+    }
+
+    public function moderation()
+    {
+        if (!auth()->user()->hasRole('moderator')) {
+            abort(403, 'Доступ запрещён.');
+        }
+
+        $comments = Comment::where('is_approved', false)
+            ->with(['article', 'user'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('comments.moderation', ['comments' => $comments]);
+    }
+
+    public function approve(Comment $comment)
+    {
+        if (!auth()->user()->hasRole('moderator')) {
+            abort(403, 'Доступ запрещён.');
+        }
+
+        $comment->update(['is_approved' => true]);
+
+        return redirect()->route('comments.moderation')->with('success', 'Комментарий одобрен!');
+    }
+
+    public function reject(Comment $comment)
+    {
+        if (!auth()->user()->hasRole('moderator')) {
+            abort(403, 'Доступ запрещён.');
+        }
+
+        $comment->delete();
+
+        return redirect()->route('comments.moderation')->with('success', 'Комментарий отклонён и удалён!');
     }
 }

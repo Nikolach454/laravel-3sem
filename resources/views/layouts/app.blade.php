@@ -50,6 +50,11 @@
                         </li>
 
                         @auth
+                            @if(Auth::user()->hasRole('moderator'))
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('comments.moderation') ? 'active' : '' }}" href="{{ route('comments.moderation') }}">Модерация</a>
+                            </li>
+                            @endif
                             <li class="nav-item">
                                 <span class="nav-link">Привет, {{ Auth::user()->name }}</span>
                             </li>

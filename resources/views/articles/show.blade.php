@@ -62,7 +62,7 @@
                 <!-- Comments Section -->
                 <div class="card mt-4">
                     <div class="card-header">
-                        <h4 class="mb-0">Комментарии ({{ $article->comments->count() }})</h4>
+                        <h4 class="mb-0">Комментарии ({{ $article->comments()->where('is_approved', true)->count() }})</h4>
                     </div>
                     <div class="card-body">
                         @if(session('success'))
@@ -110,7 +110,7 @@
                         <hr>
 
                         <!-- Comments List -->
-                        @forelse($article->comments()->latest()->get() as $comment)
+                        @forelse($article->comments()->where('is_approved', true)->latest()->get() as $comment)
                             <div class="card mb-3">
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between align-items-start">

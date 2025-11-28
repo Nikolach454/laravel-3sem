@@ -21,6 +21,7 @@ class CommentFactory extends Factory
             'user_id' => \App\Models\User::factory(),
             'author' => fake()->name(),
             'content' => fake()->paragraph(),
+            'is_approved' => fake()->boolean(70), // 70% chance of being approved
         ];
     }
 }

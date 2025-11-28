@@ -65,6 +65,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/comments/{comment}/edit', [App\Http\Controllers\CommentController::class, 'edit'])->name('comments.edit');
     Route::put('/comments/{comment}', [App\Http\Controllers\CommentController::class, 'update'])->name('comments.update');
     Route::delete('/comments/{comment}', [App\Http\Controllers\CommentController::class, 'destroy'])->name('comments.destroy');
+
+    /**
+     * Маршруты для модерации комментариев (только для модераторов)
+     */
+    Route::get('/comments/moderation', [App\Http\Controllers\CommentController::class, 'moderation'])->name('comments.moderation');
+    Route::patch('/comments/{comment}/approve', [App\Http\Controllers\CommentController::class, 'approve'])->name('comments.approve');
+    Route::delete('/comments/{comment}/reject', [App\Http\Controllers\CommentController::class, 'reject'])->name('comments.reject');
 });
 
 /**
