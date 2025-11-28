@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\NewArticleNotification;
 use App\Models\Article;
+use App\Models\Role;
+use App\Models\User;
 use App\Http\Requests\ArticleRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class ArticleController extends Controller
 {
@@ -17,16 +21,32 @@ class ArticleController extends Controller
 
     public function create()
     {
+        $this->authorize('create', Article::class);
+
         return view('articles.form', ['article' => null]);
     }
 
     public function store(ArticleRequest $request)
     {
+        $this->authorize('create', Article::class);
+
         $validated = $request->validated();
         $validated['user_id'] = auth()->id();
         $validated['author'] = auth()->user()->name;
 
-        Article::create($validated);
+        $article = Article::create($validated);
+
+        $moderatorRole = Role::where('name', 'moderator')->first();
+        if ($moderatorRole) {
+            $moderators = $moderatorRole->users;
+            foreach ($moderators as $moderator) {
+                try {
+                    Mail::to($moderator->email)->send(new NewArticleNotification($article));
+                } catch (\Exception $e) {
+                    \Log::error('Email sending failed: ' . $e->getMessage());
+                }
+            }
+        }
 
         return redirect()->route('articles.index')->with('success', 'Статья успешно создана!');
     }
@@ -38,20 +58,14 @@ class ArticleController extends Controller
 
     public function edit(Article $article)
     {
-        // Проверяем, что пользователь может редактировать только свои статьи
-        if ($article->user_id !== auth()->id()) {
-            abort(403, 'У вас нет прав для редактирования этой статьи');
-        }
+        $this->authorize('update', $article);
 
         return view('articles.form', ['article' => $article]);
     }
 
     public function update(ArticleRequest $request, Article $article)
     {
-        // Проверяем, что пользователь может редактировать только свои статьи
-        if ($article->user_id !== auth()->id()) {
-            abort(403, 'У вас нет прав для редактирования этой статьи');
-        }
+        $this->authorize('update', $article);
 
         $article->update($request->validated());
 
@@ -60,10 +74,7 @@ class ArticleController extends Controller
 
     public function destroy(Article $article)
     {
-        // Проверяем, что пользователь может удалять только свои статьи
-        if ($article->user_id !== auth()->id()) {
-            abort(403, 'У вас нет прав для удаления этой статьи');
-        }
+        $this->authorize('delete', $article);
 
         $article->delete();
 

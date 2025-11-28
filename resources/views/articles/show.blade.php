@@ -40,20 +40,20 @@
                             </small>
 
                             <div>
-                                @auth
-                                    @if($article->user_id === auth()->id())
-                                        <a href="{{ route('articles.edit', $article->id) }}" class="btn btn-warning">
-                                            <i class="bi bi-pencil"></i> Редактировать
-                                        </a>
-                                        <form action="{{ route('articles.destroy', $article->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Вы уверены, что хотите удалить эту статью?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger">
-                                                <i class="bi bi-trash"></i> Удалить
-                                            </button>
-                                        </form>
-                                    @endif
-                                @endauth
+                                @can('update', $article)
+                                    <a href="{{ route('articles.edit', $article->id) }}" class="btn btn-warning">
+                                        <i class="bi bi-pencil"></i> Редактировать
+                                    </a>
+                                @endcan
+                                @can('delete', $article)
+                                    <form action="{{ route('articles.destroy', $article->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Вы уверены, что хотите удалить эту статью?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="bi bi-trash"></i> Удалить
+                                        </button>
+                                    </form>
+                                @endcan
                             </div>
                         </div>
                     </div>
@@ -114,7 +114,7 @@
                             <div class="card mb-3">
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between align-items-start">
-                                        <div>
+                                        <div class="flex-grow-1">
                                             <h6 class="card-subtitle mb-2">
                                                 <i class="bi bi-person-circle"></i> {{ $comment->author }}
                                             </h6>
@@ -123,13 +123,22 @@
                                                 <i class="bi bi-clock"></i> {{ $comment->created_at->format('d.m.Y H:i') }}
                                             </small>
                                         </div>
-                                        <form action="{{ route('comments.destroy', $comment->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Вы уверены, что хотите удалить этот комментарий?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </form>
+                                        <div class="ms-2">
+                                            @can('update', $comment)
+                                                <a href="{{ route('comments.edit', $comment->id) }}" class="btn btn-sm btn-outline-warning me-1">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                            @endcan
+                                            @can('delete', $comment)
+                                                <form action="{{ route('comments.destroy', $comment->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Вы уверены, что хотите удалить этот комментарий?')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            @endcan
+                                        </div>
                                     </div>
                                 </div>
                             </div>

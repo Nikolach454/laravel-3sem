@@ -18,6 +18,7 @@ class CommentFactory extends Factory
     {
         return [
             'article_id' => \App\Models\Article::factory(),
+            'user_id' => \App\Models\User::factory(),
             'author' => fake()->name(),
             'content' => fake()->paragraph(),
         ];
