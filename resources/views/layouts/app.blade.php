@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Мой сайт')</title>
 
-    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
@@ -25,8 +24,10 @@
     </style>
 
     @yield('styles')
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
+    <div id="notification-app"></div>
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
             <div class="container">
@@ -55,6 +56,30 @@
                                 <a class="nav-link {{ request()->routeIs('comments.moderation') ? 'active' : '' }}" href="{{ route('comments.moderation') }}">Модерация</a>
                             </li>
                             @endif
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Уведомления
+                                    @if(Auth::user()->unreadNotifications->count() > 0)
+                                        <span class="badge bg-danger">{{ Auth::user()->unreadNotifications->count() }}</span>
+                                    @endif
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationsDropdown" style="min-width: 300px; max-height: 400px; overflow-y: auto;">
+                                    @forelse(Auth::user()->unreadNotifications as $notification)
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('notifications.read', $notification->id) }}">
+                                                <strong>{{ $notification->data['article_title'] }}</strong><br>
+                                                <small class="text-muted">{{ $notification->data['message'] }}</small><br>
+                                                <small class="text-muted">{{ $notification->created_at->diffForHumans() }}</small>
+                                            </a>
+                                        </li>
+                                        @if(!$loop->last)
+                                            <li><hr class="dropdown-divider"></li>
+                                        @endif
+                                    @empty
+                                        <li><span class="dropdown-item text-muted">Нет новых уведомлений</span></li>
+                                    @endforelse
+                                </ul>
+                            </li>
                             <li class="nav-item">
                                 <span class="nav-link">Привет, {{ Auth::user()->name }}</span>
                             </li>
@@ -101,7 +126,6 @@
         </div>
     </footer>
 
-    <!-- Bootstrap 5 JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     @yield('scripts')
