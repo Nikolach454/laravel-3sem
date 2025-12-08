@@ -52,7 +52,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
 });
 
-Route::get('/articles/{article}', [ArticleController::class, 'show'])->name('articles.show');
+Route::get('/articles/{article}', [ArticleController::class, 'show'])->name('articles.show')->middleware('track.article.views');
 
 Route::middleware('auth')->group(function () {
     Route::get('/articles/{article}/edit', [ArticleController::class, 'edit'])->name('articles.edit');
